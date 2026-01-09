@@ -1,0 +1,438 @@
+/* ============================================
+   ZWEIPRO GLOBAL ADMIN UI
+   ============================================ */
+
+/* ---------- Grundlayout ---------- */
+.zweipro-wrap {
+    max-width: 1100px;
+    margin-top: 20px;
+    font-family: system-ui, sans-serif;
+    color: #111;
+}
+
+.zweipro-wrap h1,
+.zweipro-wrap h2,
+.zweipro-wrap h3 {
+    font-weight: 600;
+    margin-bottom: 18px;
+    color: #111;
+}
+
+/* ---------- Karten ---------- */
+.zweipro-card {
+    background: #fff;
+    padding: 25px;
+    border-radius: 14px;
+    box-shadow: 0 2px 14px rgba(0,0,0,0.08);
+    margin-bottom: 30px;
+}
+
+/* ---------- Tabellen ---------- */
+table.zweipro-table,
+table.widefat.zweipro-table {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    font-size: 15px;
+}
+
+table.zweipro-table th {
+    background: #f8f8f8;
+    font-weight: 600;
+    padding: 12px;
+}
+
+table.zweipro-table td {
+    padding: 12px;
+    vertical-align: middle;
+}
+
+/* Tabellen-Links */
+.zweipro-table a {
+    color: #000;
+    font-weight: 500;
+}
+
+/* ---------- Inputs & Selects ---------- */
+.zweipro-input,
+.zweipro-select,
+.zweipro-textarea {
+    width: 100%;
+    font-size: 16px;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+}
+
+.zweipro-input:focus,
+.zweipro-select:focus,
+.zweipro-textarea:focus {
+    border-color: #000;
+    box-shadow: 0 0 0 1px #000;
+}
+
+/* ---------- Buttons ---------- */
+.zweipro-button,
+button.button.zweipro-button,
+.wp-core-ui .button.button-primary.zweipro-button {
+    background: #000 !important;
+    border-color: #000 !important;
+    color: #fff !important;
+    border-radius: 8px !important;
+    padding: 8px 16px !important;
+    font-size: 14px;
+}
+
+.zweipro-button:hover {
+    opacity: 0.85;
+}
+
+.zweipro-button-small {
+    padding: 6px 12px !important;
+    font-size: 13px !important;
+}
+
+/* ---------- Info Boxen ---------- */
+.zweipro-note {
+    background: #fdfdfd;
+    padding: 16px;
+    border-left: 4px solid #000;
+    border-radius: 8px;
+    margin-top: 12px;
+}
+
+/* ---------- Thumbnail ---------- */
+.zweipro-thumbnail {
+    border-radius: 8px;
+    width: 50px;
+    height: auto;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+}
+
+/* ---------- Copy Button ---------- */
+.zweipro-copy {
+    background: #000 !important;
+    border-radius: 8px;
+    color: #fff !important;
+border-color:red!important;
+}
+
+/* Zebra-Tabelle */
+.zweipro-zebra tbody tr:nth-child(odd) {
+    background: #ffffff;
+}
+
+.zweipro-zebra tbody tr:nth-child(even) {
+    background: #f5f5f5;
+}
+
+/* Größere Zellen allgemein */
+.zweipro-zebra td,
+.zweipro-zebra th {
+    padding: 18px 14px !important;
+    font-size: 15px;
+}
+
+/* Checkbox größer */
+.zweipro-zebra input[type="checkbox"] {
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+}
+
+/* ============================================================
+   ZWEIPRO - CUSTOM SVG CHECKBOX / TOGGLE
+   ============================================================ */
+
+.zweipro-toggle {
+    position: relative;
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+}
+
+.zweipro-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+}
+
+.zweipro-toggle .switch {
+    width: 28px;
+    height: 28px;
+    display: block;
+    background: #fff;
+    border: 2px solid #444;
+    border-radius: 6px;
+    transition: 0.2s ease;
+    position: relative;
+}
+
+.zweipro-toggle .switch::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: url('../assets/hook.svg') center/18px no-repeat;
+    opacity: 0;
+    transition: 0.2s ease;
+}
+
+.zweipro-toggle input:checked + .switch {
+    border-color: #000;
+    background: #000;
+}
+
+.zweipro-toggle input:checked + .switch::after {
+    opacity: 1;
+    filter: invert(1); /* macht dein SVG weiß auf schwarzem Hintergrund */
+}
+
+/* --- Gemeinsamer Grundstil für alle Buttons --- */
+.zweipro-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 42px;           /* gleiche Höhe */
+    padding: 0 14px;
+    border-radius: 6px;
+    border: 1px solid #d1d1d1;
+    font-size: 14px;
+    cursor: pointer;
+    background: #fff;
+    margin-right: 8px;
+    vertical-align: top;
+    line-height: 1;        /* WICHTIG: gleiche Text-Höhe */
+    box-sizing: border-box;
+    text-decoration: none; /* entfernt blue underline padding bei <a> */
+}
+
+a.zweipro-btn {
+    line-height: 1 !important; /* überschreibt WP */
+    padding: 0 14px !important; /* überschreibt WP */
+}
+
+/* Hover-Effekt */
+.zweipro-btn:hover {
+    background: #f1f1f1;
+    border-color: #bcbcbc;
+}
+
+/* Aktiv-Effekt */
+.zweipro-btn:active {
+    background: #e8e8e8;
+}
+
+/* --- Icon-Standard (für Copy & Trash) --- */
+.zweipro-btn img {
+    width: auto;
+    height: 20px;
+    object-fit: contain;   /* verhindert verzerren */
+    display: block;
+    margin-right: 6px;
+}
+
+/* --- Varianten --- */
+
+/* Copy */
+.zweipro-btn-copy {
+    color: #333;
+}
+
+/* Delete */
+.zweipro-btn-delete {
+    color: #c62828 !important;
+    border-color: #e0b4b4;
+}
+
+.zweipro-btn-delete:hover {
+    background: #ffe5e5;
+    border-color: #d88;
+}
+
+
+.zweipro-dropzone {
+    border: 2px dashed #bbb;
+    padding: 30px;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    background: #fafafa;
+    transition: .2s;
+}
+
+.zweipro-dropzone:hover,
+.zweipro-dropzone.dragover {
+    background: #f0f8ff;
+    border-color: #3399ff;
+}
+
+#zweipro-file-input {
+    display: none;
+}
+
+.zweipro-upload-item {
+    margin-top: 12px;
+    padding: 10px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.zweipro-progress {
+    margin-top: 6px;
+    height: 6px;
+    background: #eee;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.zweipro-progress-bar {
+    height: 6px;
+    width: 0%;
+    background: #3399ff;
+    transition: width .2s;
+}
+
+
+/* Einheitlicher ZWEIPRO-Button */
+.zweipro-btn-main {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 34px;
+    padding: 0 18px;
+    border-radius: 6px;
+    border: 1px solid #000;
+    background: #000;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: none !important;
+    transition: all .15s ease;
+    margin-top: 10px;
+}
+
+.zweipro-btn-main:hover {
+    background: #333;
+}
+
+.zweipro-btn-main:active {
+    background: #111;
+}
+
+/* WP-Default-Button überschreiben */
+.wp-core-ui .zweipro-btn-main.button,
+.wp-core-ui .zweipro-btn-main.button-primary {
+    background: #000 !important;
+    border-color: #000 !important;
+    color: #fff !important;
+}
+
+/* Titel der Seite in der Verwendungsliste */
+.zweipro-used-page a {
+    color: #222 !important;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.zweipro-used-page a:hover {
+    text-decoration: underline;
+}
+
+/* Edit-Icon neben dem Link */
+.zweipro-edit-link img.zweipro-edit-icon {
+    width: 20px;
+    height: auto;
+    margin-left: 6px;
+    opacity: 0.7;
+    vertical-align: middle;
+}
+
+.zweipro-edit-link img.zweipro-edit-icon:hover {
+    opacity: 1;
+}
+
+/* Wrapper für zwei Spalten */
+.zweipro-upload-flex {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+/* Linke Upload-Spalte */
+.zweipro-upload-col {
+    flex: 1;
+}
+
+/* Rechte Rollen-Spalte */
+.zweipro-role-col {
+    flex: 1;
+    background: #fafafa;
+    border: 1px solid #ddd;
+    padding: 15px 20px;
+    border-radius: 8px;
+}
+
+/* Rollenliste */
+.zweipro-role-box {
+    margin-top: 10px;
+}
+
+.zweipro-role-item {
+    display: block;
+    padding: 4px 0;
+    cursor: pointer;
+}
+
+.zweipro-upload-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    align-items: start;
+    margin-bottom: 20px;
+}
+
+/* Die Dropzone */
+.zweipro-dropzone {
+    border: 2px dashed #bbb;
+    padding: 30px;
+    text-align: center;
+    background: #fafafa;
+    cursor: pointer;
+    border-radius: 6px;
+}
+
+.zweipro-dropzone.dragover {
+    border-color: #0073aa;
+    background: #eef7ff;
+}
+
+/* Rollenbox rechts */
+.zweipro-role-box {
+    border: 0px solid #ddd;
+    padding: 0px;
+padding-left:40px;
+    background: #fff;
+    border-radius: 6px;
+}
+
+
+
+
+
+
+
+.zweipro-card table.widefat tbody tr:nth-child(even) {
+    background: #f6f7f7;
+}
+
+.zweipro-card table.widefat tbody tr:hover {
+    background: #eef0f2;
+}
+
+
+code, kbd {background:transparent;}

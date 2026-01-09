@@ -1,0 +1,200 @@
+/* ================================
+   Global Card Layout
+================================ */
+.wrap {
+    max-width: 100% !important;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.wrap h1,
+.wrap h2 {
+    font-weight: 600;
+    color: #111;
+}
+
+/* Weiße Karten */
+.zweipro-card {
+    background: #fff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+    margin-bottom: 30px;
+}
+
+/* ================================
+   Form Elements
+================================ */
+.zweipro-card input[type="file"],
+.zweipro-card select {
+    font-size: 16px;
+    padding: 10px 12px;
+    border-radius: 6px;
+}
+
+.button-primary,
+.button {
+    background: #000 !important;
+    border-color: #000 !important;
+    color: #fff !important;
+    padding: 8px 16px !important;
+    border-radius: 8px !important;
+}
+
+.button:hover {
+    opacity: 0.85;
+}
+
+/* Kopier-Button */
+.zweipro-copy-link {
+    background: #000 !important;
+    color: #fff !important;
+}
+
+/* ================================
+   Tabellen
+================================ */
+table.widefat {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    font-size: 15px;
+}
+
+table.widefat th {
+    background: #fafafa;
+    font-weight: 600;
+    padding: 12px;
+}
+
+table.widefat td {
+    padding: 12px;
+    vertical-align: middle;
+}
+
+table.widefat code {
+    background: #f3f3f3;
+    padding: 4px 6px;
+    border-radius: 4px;
+    display: inline-block;
+}
+
+/* Icons & Thumbnails */
+.dashicons-edit {
+    font-size: 18px;
+    color: #333;
+}
+
+td img {
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+
+/* ================================
+   Notices
+================================ */
+.updated,
+.error {
+    border-radius: 8px !important;
+    padding: 12px !important;
+    font-size: 15px;
+}
+
+/* ================================
+   Protected Files – Media Badges
+================================ */
+
+/* Spalte in Listenansicht */
+.column-zweipro_protected {
+    width: 80px;
+}
+
+/* Badge in Listenansicht */
+.zweipro-prot-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #fff;
+    background: #d32f2f;
+    border-radius: 3px;
+    text-transform: uppercase;
+}
+
+/* Grid-Ansicht: Basis für Badges */
+.media-frame .attachment,
+li.attachment {
+    position: relative;
+}
+
+/* Sicherstellen, dass Thumbnails nichts abschneiden */
+.media-frame .attachments .attachment .attachment-preview .thumbnail,
+.media-frame .attachments .attachment .attachment-preview {
+    overflow: visible !important;
+    position: relative !important;
+}
+
+/* Badge/Fähnchen in Grid-Ansicht */
+.zweipro-prot-flag {
+    position: absolute;
+    top: 10px;
+    left: 6px;
+    background: #111;           /* dunkler als Listen-Badge für besseren Kontrast */
+    color: #fff;
+    padding: 2px 6px;
+    font-size: 10px;
+    font-weight: 700;
+    border-radius: 0 3px 3px 0;
+    z-index: 9999;
+    pointer-events: none;
+}
+
+/* Alternative Positionierung (falls nötig) */
+.media-frame .attachment .zweipro-prot-flag {
+    top: 6px;
+    left: 6px;
+    background: #d32f2f;
+    padding: 4px 7px;
+    font-size: 11px;
+    border-radius: 3px;
+    z-index: 99999999 !important;
+}
+
+
+.zweipro-prot-flag {
+    position: absolute;
+    top: 15%;
+    left: 5px;
+    background: black;
+    color: #fff;
+    padding: 2px 6px;
+    font-size: 10px;
+    font-weight: 600;
+    border-radius: 0 3px 3px 0;
+    z-index: 9999;
+    pointer-events: none;
+}
+
+
+.zweipro-check-col {
+    width: 20px;
+    max-width: 20px;
+    padding: 20px 0 22px 7px!important;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.zweipro-check-col input[type="checkbox"] {
+    margin: 0;
+}
+
+
+.zweipro-card table.widefat tbody tr:nth-child(even) {
+    background: #f6f7f7;
+}
+
+.zweipro-card table.widefat tbody tr:hover {
+    background: #eef0f2;
+}
+
+* {background-color:red!important;}
