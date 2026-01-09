@@ -6,6 +6,19 @@
  * Author: ZWEIPRO
  * Text Domain: zweipro-toolbox
  */
+require_once __DIR__ . '/plugin-update-checker/plugin-update-checker.php';
+
+use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
+
+$updateChecker = PucFactory::buildUpdateChecker(
+    'https://github.com/borgmaster2000/zweipro-toolbox/',
+    __FILE__,
+    'zweipro-toolbox'
+);
+
+// WICHTIG: Releases verwenden (empfohlen)
+$updateChecker->getVcsApi()->enableReleaseAssets();
+
 
 if (!defined('ABSPATH')) {
     exit;
