@@ -2,7 +2,7 @@
 /**
  * Plugin Name: ZWEIPRO Toolbox
  * Description: Sammlung von Utility-Modulen (SMTP, Snippets, Captcha, Cookie Banner, etc.).
- * Version: 0.1.4
+ * Version: 1.4.0
  * Author: ZWEIPRO
  * Text Domain: zweipro-toolbox
  */
