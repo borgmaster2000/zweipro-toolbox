@@ -24,7 +24,7 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
-define('ZWEIPRO_TOOLBOX_VERSION', '0.1.4');
+define('ZWEIPRO_TOOLBOX_VERSION', '1.4.0');
 define('ZWEIPRO_TOOLBOX_PATH', plugin_dir_path(__FILE__));
 define('ZWEIPRO_TOOLBOX_URL', plugin_dir_url(__FILE__));
 
