@@ -38,6 +38,12 @@ class Module implements ModuleInterface
         // Sicherheit: Direkte URLs überschreiben
         add_filter('wp_get_attachment_url', [$this, 'filter_protected_attachment_url'], 99, 2);
 
+        // auch in Modal Mediathek
+	    add_action('admin_enqueue_scripts', [$this, 'enqueue_media_grid_badge_script']);
+        add_action('wp_enqueue_media',   [$this, 'enqueue_media_grid_badge_script']);
+	    add_action('admin_head', [$this, 'output_media_badge_css']);
+	    add_action('wp_enqueue_media', [$this, 'output_media_badge_css']);
+
 
 
 //  Geschützte Bilder: keine direkten File-URLs über srcset leaken
@@ -114,16 +120,18 @@ private function get_blocked_tokens_for_current_user(): array
 
    public function enqueue_media_grid_badge_script(): void
 {
-    // Auf allen Admin-Seiten laufen lassen, sobald das Media-Modal verfügbar ist
-// WICHTIG: In AJAX nichts tun → verhindert Fehler bei Uploads
+    // In AJAX nichts tun
     if (wp_doing_ajax()) {
         return;
     }
 
     // Nur fortfahren, wenn media-views geladen ist
-    if (!wp_script_is('media-views', 'enqueued')) {
-        return;
-    }
+   if (
+    !wp_script_is('media-views', 'enqueued') &&
+    !wp_script_is('media-views', 'registered')
+) {
+    return;
+}
 
     // Geschützte IDs aus Transient holen (mit Cache)
     $protected_ids = get_transient('zweipro_protected_media_ids');
