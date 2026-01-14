@@ -38,11 +38,9 @@ class Module implements ModuleInterface
         // Sicherheit: Direkte URLs überschreiben
         add_filter('wp_get_attachment_url', [$this, 'filter_protected_attachment_url'], 99, 2);
 
-        // auch in Modal Mediathek
-	    add_action('admin_enqueue_scripts', [$this, 'enqueue_media_grid_badge_script']);
-        add_action('wp_enqueue_media',   [$this, 'enqueue_media_grid_badge_script']);
-	    add_action('admin_head', [$this, 'output_media_badge_css']);
-	    add_action('wp_enqueue_media', [$this, 'output_media_badge_css']);
+// Breakdance Editor läuft im Frontend-Iframe -> dort auch Badges laden
+add_action('wp_enqueue_scripts', [$this, 'enqueue_media_grid_badge_script_breakdance'], 99);
+add_action('wp_head', [$this, 'output_media_badge_css_breakdance'], 99);
 
 
 
@@ -69,11 +67,13 @@ add_action('pre_get_posts', [$this, 'hide_protected_media_for_authors'], 20);
             // CSS für Badges
             add_action('admin_head-upload.php', [$this, 'output_media_badge_css']);
             add_action('admin_head-post.php', [$this, 'output_media_badge_css']);
+            add_action('admin_head-post-new.php', [$this, 'output_media_badge_css']);
 
             // Performantes Grid-Badge-Script
             // add_action('admin_print_scripts-upload.php', [$this, 'enqueue_media_grid_badge_script']);
             // add_action('admin_print_scripts-media-new.php', [$this, 'enqueue_media_grid_badge_script']);
             add_action('admin_enqueue_scripts', [$this, 'enqueue_media_grid_badge_script']);
+			add_action('admin_head', [$this, 'output_media_badge_css']);
 
             // PDFs auch in MetaBox "image_advanced" / Media-Modal sichtbar machen
             add_filter('ajax_query_attachments_args', [$this, 'allow_pdfs_in_media_modal'], 20, 1);
@@ -91,7 +91,21 @@ add_action('pre_get_posts', [$this, 'hide_protected_media_for_authors'], 20);
 
 
 
+private function is_breakdance_context(): bool
+{
+    // Preview-iframe
+    if (!empty($_GET['breakdance_iframe'])) return true;
 
+    // häufige Parent-Editor Indikatoren (je nach BD-Version)
+    if (!empty($_GET['breakdance'])) return true;
+    if (!empty($_GET['bd'])) return true;
+    if (!empty($_GET['breakdance_editor'])) return true;
+
+    // manche Installationen setzen Konstanten
+    if (defined('BREAKDANCE_VERSION')) return true;
+
+    return false;
+}
 
 private function get_blocked_tokens_for_current_user(): array
 {
@@ -116,73 +130,152 @@ private function get_blocked_tokens_for_current_user(): array
 
 
 
+public function enqueue_media_grid_badge_script_breakdance(): void
+{
+    if (!$this->is_breakdance_context()) return;
+
+    if (function_exists('wp_enqueue_media')) {
+        wp_enqueue_media();
+    }
+
+    $this->enqueue_media_grid_badge_script();
+}
+
+public function output_media_badge_css_breakdance(): void
+{
+    if (!$this->is_breakdance_context()) return;
+
+    $this->output_media_badge_css();
+}
     /* ====================== PERFORMANCE: GRID BADGE ====================== */
 
    public function enqueue_media_grid_badge_script(): void
 {
-    // In AJAX nichts tun
-    if (wp_doing_ajax()) {
-        return;
-    }
+    if (wp_doing_ajax()) return;
 
-    // Nur fortfahren, wenn media-views geladen ist
-   if (
-    !wp_script_is('media-views', 'enqueued') &&
-    !wp_script_is('media-views', 'registered')
-) {
-    return;
-}
+    // Dummy-Handle, der garantiert NACH media-views kommt, sobald wp_enqueue_media() geladen wurde
+    wp_register_script('zweipro-prot-badges', '', ['media-views', 'jquery'], '1.0', true);
+    wp_enqueue_script('zweipro-prot-badges');
 
-    // Geschützte IDs aus Transient holen (mit Cache)
+    // IDs holen (wie gehabt)
     $protected_ids = get_transient('zweipro_protected_media_ids');
     if ($protected_ids === false) {
         $protected_ids = get_posts([
             'post_type'      => 'attachment',
             'posts_per_page' => -1,
             'fields'         => 'ids',
-            'meta_query'     => [
-                [
-                    'key'     => '_zweipro_protected',
-                    'value'   => '1',
-                    'compare' => '=',
-                ],
-            ],
+            'meta_query'     => [[
+                'key'     => '_zweipro_protected',
+                'value'   => '1',
+                'compare' => '=',
+            ]],
         ]);
         $protected_ids = array_map('intval', $protected_ids);
         set_transient('zweipro_protected_media_ids', $protected_ids, 10 * MINUTE_IN_SECONDS);
     }
 
-    // Variablen ins JS geben
     wp_add_inline_script(
-        'media-views',
+        'zweipro-prot-badges',
         'window.ZWEIPRO_PROTECTED_IDS = ' . wp_json_encode($protected_ids) . ';',
         'before'
     );
 
-    // Hauptlogik – Styling jetzt aus CSS (keine Inline-Styles mehr!)
-    wp_add_inline_script('media-views', '
-        jQuery(function($) {
-            if (typeof window.ZWEIPRO_PROTECTED_IDS === "undefined" || !window.ZWEIPRO_PROTECTED_IDS.length) {
-                return;
-            }
-            const protectedSet = new Set(window.ZWEIPRO_PROTECTED_IDS);
+    // Wichtig: NICHT mehr DOM-pollen. Direkt Attachment-View patchen => funktioniert in jedem Modal/Grid
+ wp_add_inline_script('zweipro-prot-badges', <<<'JS'
+jQuery(function($){
+  const ids = window.ZWEIPRO_PROTECTED_IDS || [];
+  const set = new Set((ids || []).map(Number));
+  if (!set.size) return;
 
-            function markProtected() {
-                $(".attachment").each(function() {
-                    const $item = $(this);
-                    const id = parseInt($item.data("id"), 10);
-                    if (!id || !protectedSet.has(id) || $item.find(".zweipro-prot-flag").length) {
-                        return;
-                    }
-                    $item.css("position", "relative");
-                    $item.append("<div class=\"zweipro-prot-flag\">PROT</div>");
-                });
-            }
+  function addFlag($el){
+    if (!$el || !$el.length) return;
+    if ($el.find(".zweipro-prot-flag").length) return;
+    if ($el.css("position") === "static") $el.css("position","relative");
+    $el.append('<div class="zweipro-prot-flag">PROT</div>');
+  }
 
-            markProtected();
-            $(document).on("ajaxComplete", markProtected);
+  function extractId(el){
+    const $el = $(el);
+    const raw =
+      $el.attr("data-id") ||
+      $el.attr("data-attachment-id") ||
+      $el.data("id") ||
+      $el.data("attachment-id") ||
+      // manche Builder nutzen data-attachment / data-post-id
+      $el.attr("data-attachment") ||
+      $el.attr("data-post-id") ||
+      $el.data("post-id");
+
+    const id = parseInt(raw, 10);
+    return Number.isFinite(id) ? id : 0;
+  }
+
+  function scan(root){
+    const $root = root ? $(root) : $(document);
+
+    // WP Standard + viele Builder
+    $root.find(".attachment, [data-id], [data-attachment-id], [data-attachment], [data-post-id]").each(function(){
+      const id = extractId(this);
+      if (id && set.has(id)) addFlag($(this));
+    });
+  }
+
+  function rescanSoon(root){
+    setTimeout(function(){ scan(root); }, 30);
+    setTimeout(function(){ scan(root); }, 150);
+    setTimeout(function(){ scan(root); }, 400);
+  }
+
+  // 1) initial
+  scan();
+  rescanSoon(document);
+
+  // 2) ajax
+  $(document).ajaxComplete(function(){ rescanSoon(document); });
+
+  // 3) WP Media Attachment View hook (funktioniert im echten wp.media modal)
+  if (window.wp && wp.media && wp.media.view && wp.media.view.Attachment) {
+    const A = wp.media.view.Attachment.prototype;
+    if (!A.__zweiproProtPatched) {
+      A.__zweiproProtPatched = true;
+      const origRender = A.render;
+      A.render = function(){
+        const r = origRender.apply(this, arguments);
+        try {
+          const id = this.model && this.model.get ? parseInt(this.model.get("id"), 10) : 0;
+          if (id && set.has(id)) addFlag(this.$el);
+        } catch(e){}
+        return r;
+      };
+    }
+  }
+
+  // 4) Builder-Modal Öffnen: Klick auf "Media/Library" Buttons (BD/Bricks etc.)
+  $(document).on("click", "button, a, .components-button", function(){
+    // nach dem Öffnen baut der Builder DOM neu -> mehrfach scannen
+    rescanSoon(document);
+    // spezifisch innerhalb WP media modal falls vorhanden
+    const mm = document.querySelector(".media-modal");
+    if (mm) rescanSoon(mm);
+  });
+
+  // 5) MutationObserver: wenn BD Modal Inhalt reinwirft, scannen wir NUR den neuen Subtree
+  const obs = new MutationObserver(function(muts){
+    for (const m of muts) {
+      if (m.addedNodes && m.addedNodes.length) {
+        m.addedNodes.forEach(function(node){
+          if (node.nodeType === 1) {
+            scan(node);
+            rescanSoon(node);
+          }
         });
-    ', 'after');
+      }
+    }
+  });
+  obs.observe(document.body, {childList:true, subtree:true});
+});
+JS
+, 'after');
 }
 
 // Cache leeren bei Änderungen
@@ -544,12 +637,16 @@ public function on_deactivate(): void
 
 
     public function output_media_badge_css(): void
-    {
-        echo '<style>
-            .zweipro-prot-badge { display:inline-block; padding:2px 6px; font-size:11px; font-weight:600; color:#fff; background:#d32f2f; border-radius:3px; text-transform:uppercase; }
-            .zweipro-prot-flag { position:absolute; top:15%; left:5px; background:black; color:#fff; padding:2px 6px; font-size:10px; font-weight:600; border-radius:0 3px 3px 0; z-index:9999; pointer-events:none; }
-        </style>';
+{
+    if (wp_doing_ajax()) {
+        return;
     }
+
+    echo '<style>
+        .zweipro-prot-badge { display:inline-block; padding:2px 6px; font-size:11px; font-weight:600; color:#fff; background:#d32f2f; border-radius:3px; text-transform:uppercase; }
+        .zweipro-prot-flag { position:absolute; top:15%; left:5px; background:black; color:#fff; padding:2px 6px; font-size:10px; font-weight:600; border-radius:0 3px 3px 0; z-index:9999; pointer-events:none; }
+    </style>';
+}
 
     /* ====================== MEDIATHEK ====================== */
 
@@ -586,54 +683,57 @@ public function on_deactivate(): void
 }
     
     public function allow_pdfs_in_media_modal(array $args): array
-    {
-        // ✅ Nur ausblenden, wenn aktuelle Rolle in exclude_roles steht (Token basiert)
-if (!current_user_can('manage_options') && !current_user_can('editor')) {
-    $blocked_tokens = $this->get_blocked_tokens_for_current_user();
+{
+    // Rollenfilter: nur wenn nötig
+    if (!current_user_can('manage_options') && !current_user_can('editor')) {
+        $blocked_tokens = $this->get_blocked_tokens_for_current_user();
 
-    if (!empty($blocked_tokens)) {
-        $args['meta_query'] = $args['meta_query'] ?? [];
-        $args['meta_query'][] = [
-            'relation' => 'OR',
-            [
-                'key'     => '_zweipro_protected_token',
-                'compare' => 'NOT EXISTS',
-            ],
-            [
-                'key'     => '_zweipro_protected_token',
-                'value'   => $blocked_tokens,
-                'compare' => 'NOT IN',
-            ],
-        ];
+        if (!empty($blocked_tokens)) {
+            $new_clause = [
+                'relation' => 'OR',
+                [
+                    'key'     => '_zweipro_protected_token',
+                    'compare' => 'NOT EXISTS',
+                ],
+                [
+                    'key'     => '_zweipro_protected_token',
+                    'value'   => $blocked_tokens,
+                    'compare' => 'NOT IN',
+                ],
+            ];
+
+            if (empty($args['meta_query']) || !is_array($args['meta_query'])) {
+                $args['meta_query'] = $new_clause;
+            } else {
+                $existing = $args['meta_query'];
+                $args['meta_query'] = [
+                    'relation' => 'AND',
+                    $existing,
+                    $new_clause,
+                ];
+            }
+        }
     }
-}
 
-
-
-
-
-
-// Viele Felder (z.B. MetaBox image_advanced) filtern hart auf "image" → PDFs würden verschwinden.
-        if (!isset($args['post_mime_type'])) {
-            return $args;
-        }
-
-        $mt = $args['post_mime_type'];
-
-        // String-Fall
-        if (is_string($mt) && $mt === 'image') {
-            $args['post_mime_type'] = ['image', 'application/pdf'];
-            return $args;
-        }
-
-        // Array-Fall
-        if (is_array($mt) && in_array('image', $mt, true) && !in_array('application/pdf', $mt, true)) {
-            $mt[] = 'application/pdf';
-            $args['post_mime_type'] = $mt;
-        }
-
+    // PDFs zusätzlich erlauben (wichtig für image_advanced & Co.)
+    if (!isset($args['post_mime_type'])) {
         return $args;
     }
+
+    $mt = $args['post_mime_type'];
+
+    if (is_string($mt) && $mt === 'image') {
+        $args['post_mime_type'] = ['image', 'application/pdf'];
+        return $args;
+    }
+
+    if (is_array($mt) && in_array('image', $mt, true) && !in_array('application/pdf', $mt, true)) {
+        $mt[] = 'application/pdf';
+        $args['post_mime_type'] = $mt;
+    }
+
+    return $args;
+}
 
 public function attachment_fields_protected(array $fields, \WP_Post $post): array
     {
