@@ -474,9 +474,16 @@ private function remove_guard_files(): void
 public function on_deactivate(): void
 {
     $settings = get_option(self::OPTION_KEY, []);
-    if (!empty($settings['persist_protection_on_deactivate'])) {
+
+    // FAIL-SAFE: wenn Setting fehlt -> Schutz bleibt aktiv
+    $persist = array_key_exists('persist_protection_on_deactivate', $settings)
+        ? (int) $settings['persist_protection_on_deactivate']
+        : 1;
+
+    if ($persist === 1) {
         return; // Guard bleibt
     }
+
     $this->remove_guard_files(); // Guard weg
 }
 	
