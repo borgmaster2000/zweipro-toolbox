@@ -1153,7 +1153,11 @@ $this->ensure_storage_dir();
   <th>Schutz bei Deaktivierung behalten</th>
   <td>
     <label style="display:flex;gap:10px;align-items:center;">
-      <input type="checkbox" id="zweipro-persist-guard" name="persist_protection_on_deactivate" value="1" <?php checked(!empty($settings['persist_protection_on_deactivate'])); ?>>
+      <label class="zweipro-switch">
+  <input type="checkbox" id="zweipro-persist-guard" name="persist_protection_on_deactivate" value="1" <?php checked(!empty($settings['persist_protection_on_deactivate'])); ?>>
+  <span class="zweipro-slider"></span>
+</label>
+<span>Dateien bleiben auch ohne Plugin geschützt (Login + Rollencheck)</span>
       <span>Dateien bleiben auch ohne Plugin geschützt (Login + Rollencheck)</span>
     </label>
   </td>
