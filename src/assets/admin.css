@@ -127,14 +127,14 @@ border-color:red!important;
     background: #f5f5f5;
 }
 
-/* Größere Zellen allgemein */
+/* GrÃ¶ÃŸere Zellen allgemein */
 .zweipro-zebra td,
 .zweipro-zebra th {
     padding: 18px 14px !important;
     font-size: 15px;
 }
 
-/* Checkbox größer */
+/* Checkbox grÃ¶ÃŸer */
 .zweipro-zebra input[type="checkbox"] {
     width: 22px;
     height: 22px;
@@ -187,15 +187,15 @@ border-color:red!important;
 
 .zweipro-toggle input:checked + .switch::after {
     opacity: 1;
-    filter: invert(1); /* macht dein SVG weiß auf schwarzem Hintergrund */
+    filter: invert(1); /* macht dein SVG weiÃŸ auf schwarzem Hintergrund */
 }
 
-/* --- Gemeinsamer Grundstil für alle Buttons --- */
+/* --- Gemeinsamer Grundstil fÃ¼r alle Buttons --- */
 .zweipro-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    height: 42px;           /* gleiche Höhe */
+    height: 42px;           /* gleiche HÃ¶he */
     padding: 0 14px;
     border-radius: 6px;
     border: 1px solid #d1d1d1;
@@ -204,14 +204,14 @@ border-color:red!important;
     background: #fff;
     margin-right: 8px;
     vertical-align: top;
-    line-height: 1;        /* WICHTIG: gleiche Text-Höhe */
+    line-height: 1;        /* WICHTIG: gleiche Text-HÃ¶he */
     box-sizing: border-box;
     text-decoration: none; /* entfernt blue underline padding bei <a> */
 }
 
 a.zweipro-btn {
-    line-height: 1 !important; /* überschreibt WP */
-    padding: 0 14px !important; /* überschreibt WP */
+    line-height: 1 !important; /* Ã¼berschreibt WP */
+    padding: 0 14px !important; /* Ã¼berschreibt WP */
 }
 
 /* Hover-Effekt */
@@ -225,7 +225,7 @@ a.zweipro-btn {
     background: #e8e8e8;
 }
 
-/* --- Icon-Standard (für Copy & Trash) --- */
+/* --- Icon-Standard (fÃ¼r Copy & Trash) --- */
 .zweipro-btn img {
     width: auto;
     height: 20px;
@@ -323,7 +323,7 @@ a.zweipro-btn {
     background: #111;
 }
 
-/* WP-Default-Button überschreiben */
+/* WP-Default-Button Ã¼berschreiben */
 .wp-core-ui .zweipro-btn-main.button,
 .wp-core-ui .zweipro-btn-main.button-primary {
     background: #000 !important;
@@ -355,7 +355,7 @@ a.zweipro-btn {
     opacity: 1;
 }
 
-/* Wrapper für zwei Spalten */
+/* Wrapper fÃ¼r zwei Spalten */
 .zweipro-upload-flex {
     display: flex;
     gap: 30px;
@@ -422,10 +422,6 @@ padding-left:40px;
 
 
 
-
-
-
-
 .zweipro-card table.widefat tbody tr:nth-child(even) {
     background: #f6f7f7;
 }
@@ -434,5 +430,11 @@ padding-left:40px;
     background: #eef0f2;
 }
 
-
 code, kbd {background:transparent;}
+
+.zweipro-switch{position:relative;display:inline-block;width:46px;height:26px}
+.zweipro-switch input{opacity:0;width:0;height:0}
+.zweipro-slider{position:absolute;cursor:pointer;inset:0;background:#cfd4d9;border-radius:999px;transition:.2s}
+.zweipro-slider:before{content:"";position:absolute;height:22px;width:22px;left:2px;top:2px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.zweipro-switch input:checked + .zweipro-slider{background:#111}
+.zweipro-switch input:checked + .zweipro-slider:before{transform:translateX(20px)}

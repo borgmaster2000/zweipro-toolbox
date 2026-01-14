@@ -40,10 +40,10 @@ class Module implements ModuleInterface
 
 
 
-// ✅ Geschützte Bilder: keine direkten File-URLs über srcset leaken
+//  Geschützte Bilder: keine direkten File-URLs über srcset leaken
 add_filter('wp_calculate_image_srcset', [$this, 'disable_srcset_for_protected'], 10, 5);
 
-// ✅ Geschützte Bilder: im Frontend Bild-URL auf Token-URL zwingen
+//  Geschützte Bilder: im Frontend Bild-URL auf Token-URL zwingen
 add_filter('wp_get_attachment_image_src', [$this, 'force_secure_image_src'], 10, 4);
 
 add_action('pre_get_posts', [$this, 'hide_protected_media_for_authors'], 20);
@@ -474,9 +474,16 @@ private function remove_guard_files(): void
 public function on_deactivate(): void
 {
     $settings = get_option(self::OPTION_KEY, []);
-    if (!empty($settings['persist_protection_on_deactivate'])) {
+
+    // FAIL-SAFE: wenn Setting fehlt -> Schutz bleibt aktiv
+    $persist = array_key_exists('persist_protection_on_deactivate', $settings)
+        ? (int) $settings['persist_protection_on_deactivate']
+        : 1;
+
+    if ($persist === 1) {
         return; // Guard bleibt
     }
+
     $this->remove_guard_files(); // Guard weg
 }
 	
@@ -1030,7 +1037,7 @@ if (file_exists($thumb)) {
                         if (file_exists($stored_file)) {
                             @unlink($stored_file);
                         }
-                        // ✅ Attachment sicher über Token-Meta finden (funktioniert für Bilder + PDFs)
+                        //  Attachment sicher über Token-Meta finden (funktioniert für Bilder + PDFs)
 $attachment_id = 0;
 
 // 1) Primär: Meta-Lookup über _zweipro_protected_token
@@ -1100,7 +1107,7 @@ $this->ensure_storage_dir();
                             <?php
                             foreach (wp_roles()->roles as $role_key => $role_obj) {
     if ($role_key === 'administrator') continue;
-    if ($role_key === 'editor') continue; // ✅ Redakteur nicht auswählbar
+    if ($role_key === 'editor') continue; //  Redakteur nicht auswählbar
 
     $label = function_exists('translate_user_role')
         ? translate_user_role($role_obj['name'])
@@ -1152,11 +1159,14 @@ $this->ensure_storage_dir();
 		<tr>
   <th>Schutz bei Deaktivierung behalten</th>
   <td>
-    <label style="display:flex;gap:10px;align-items:center;">
+  <div style="display:flex;gap:10px;align-items:center;">
+    <label class="zweipro-switch">
       <input type="checkbox" id="zweipro-persist-guard" name="persist_protection_on_deactivate" value="1" <?php checked(!empty($settings['persist_protection_on_deactivate'])); ?>>
-      <span>Dateien bleiben auch ohne Plugin geschützt (Login + Rollencheck)</span>
+      <span class="zweipro-slider"></span>
     </label>
-  </td>
+    <span>Dateien bleiben auch ohne Plugin geschützt (Login + Rollencheck)</span>
+  </div>
+</td>
 </tr>
                     </table>
                     <button type="submit" class="zweipro-btn-main">Einstellungen speichern</button>
